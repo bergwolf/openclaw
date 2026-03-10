@@ -1,0 +1,95 @@
+name: Memory Benchmark
+
+on:
+  pull_request:
+    paths:
+      - 'src/memory/**'
+      - 'src/memory/benchmark/**'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run memory benchmark
+        run: |
+          pnpm tsx src/memory/benchmark/cli.ts run \
+            --strategy current-baseline \
+            --format json \
+            --output benchmark-results.json
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ github.sha }}
+          path: benchmark-results.json
+          retention-days: 30
+
+      - name: Compare strategies
+        run: |
+          pnpm tsx src/memory/benchmark/cli.ts compare \
+            --strategies baseline vector-only keyword-only balanced \
+            --output comparison-results.json
+
+      - name: Upload comparison results
+        uses: actions/upload-artifact@v4
+        with:
+          name: comparison-results-${{ github.sha }}
+          path: comparison-results.json
+          retention-days: 30
+
+      - name: Display summary
+        run: |
+          echo "## Memory Benchmark Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Benchmark completed for commit ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f benchmark-results.json ]; then
+            echo "### Baseline Strategy Metrics" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            jq '.summary.averages' benchmark-results.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Check for regressions
+        run: |
+          PRECISION=$(jq '.summary.averages.precisionAtK["5"]' benchmark-results.json)
+          RECALL=$(jq '.summary.averages.recallAtK["5"]' benchmark-results.json)
+          MRR=$(jq '.summary.averages.mrr' benchmark-results.json)
+          
+          echo "P@5: $PRECISION"
+          echo "R@5: $RECALL"
+          echo "MRR: $MRR"
+          
+          # Fail if metrics fall below minimum thresholds
+          if (( $(echo "$PRECISION < 0.5" | bc -l) )); then
+            echo "::error::Precision@5 below threshold (0.5): $PRECISION"
+            exit 1
+          fi
+          
+          if (( $(echo "$MRR < 0.5" | bc -l) )); then
+            echo "::error::MRR below threshold (0.5): $MRR"
+            exit 1
+          fi
+          
+          echo "::notice::All metrics above minimum thresholds ✓"
