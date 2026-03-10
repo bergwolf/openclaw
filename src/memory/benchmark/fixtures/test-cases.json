@@ -1,0 +1,221 @@
+{
+	"version": "1.0.0",
+	"name": "OpenClaw Memory Benchmark - Core Test Suite",
+	"description": "Test cases for evaluating memory retrieval quality across different strategies",
+	"testCases": [
+		{
+			"id": "factual-jwt-auth",
+			"description": "Factual recall: Why JWT for authentication?",
+			"query": "Why did we choose JWT for authentication?",
+			"category": "factual",
+			"corpus": ["decisions.md"],
+			"expectedResults": [
+				{
+					"file": "decisions.md",
+					"snippetContains": "JWT",
+					"relevance": 1.0
+				}
+			]
+		},
+		{
+			"id": "factual-api-port",
+			"description": "Factual recall: API server port",
+			"query": "What port does the API run on?",
+			"category": "factual",
+			"corpus": ["decisions.md"],
+			"expectedResults": [
+				{
+					"file": "decisions.md",
+					"snippetContains": "port 3000",
+					"relevance": 1.0
+				}
+			]
+		},
+		{
+			"id": "conceptual-database",
+			"description": "Conceptual: Database decision rationale",
+			"query": "How do we handle database for the backend?",
+			"category": "conceptual",
+			"corpus": ["decisions.md"],
+			"expectedResults": [
+				{
+					"file": "decisions.md",
+					"snippetContains": "PostgreSQL",
+					"relevance": 1.0
+				}
+			]
+		},
+		{
+			"id": "conceptual-caching",
+			"description": "Conceptual: Caching strategy",
+			"query": "What's our caching approach?",
+			"category": "conceptual",
+			"corpus": ["decisions.md"],
+			"expectedResults": [
+				{
+					"file": "decisions.md",
+					"snippetContains": "Redis",
+					"relevance": 1.0
+				}
+			]
+		},
+		{
+			"id": "temporal-recent-optimization",
+			"description": "Temporal: Recent performance work",
+			"query": "What performance optimizations were done recently?",
+			"category": "temporal",
+			"corpus": ["recent-changes.md"],
+			"expectedResults": [
+				{
+					"file": "recent-changes.md",
+					"snippetContains": "Performance Optimization",
+					"relevance": 1.0
+				}
+			]
+		},
+		{
+			"id": "temporal-security-audit",
+			"description": "Temporal: Recent security fixes",
+			"query": "Were there any security issues found recently?",
+			"category": "temporal",
+			"corpus": ["recent-changes.md"],
+			"expectedResults": [
+				{
+					"file": "recent-changes.md",
+					"snippetContains": "Security Audit",
+					"relevance": 1.0
+				}
+			]
+		},
+		{
+			"id": "multi-file-authentication",
+			"description": "Multi-file: Authentication across contexts",
+			"query": "Tell me about our authentication system",
+			"category": "multi-file",
+			"corpus": ["decisions.md", "recent-changes.md"],
+			"expectedResults": [
+				{
+					"file": "decisions.md",
+					"snippetContains": "JWT",
+					"relevance": 1.0
+				},
+				{
+					"file": "recent-changes.md",
+					"snippetContains": "User service",
+					"relevance": 0.7
+				}
+			]
+		},
+		{
+			"id": "multi-file-infrastructure",
+			"description": "Multi-file: Infrastructure decisions",
+			"query": "What infrastructure and deployment choices have we made?",
+			"category": "multi-file",
+			"corpus": ["decisions.md", "recent-changes.md"],
+			"expectedResults": [
+				{
+					"file": "decisions.md",
+					"snippetContains": "CI/CD",
+					"relevance": 0.8
+				},
+				{
+					"file": "recent-changes.md",
+					"snippetContains": "Monitoring",
+					"relevance": 0.8
+				}
+			]
+		},
+		{
+			"id": "negative-kubernetes",
+			"description": "Negative case: Query with no relevant results",
+			"query": "Do we use Kubernetes for orchestration?",
+			"category": "negative",
+			"corpus": ["decisions.md", "recent-changes.md"],
+			"expectedResults": []
+		},
+		{
+			"id": "technical-websocket",
+			"description": "Technical implementation: WebSocket details",
+			"query": "How is real-time collaboration implemented?",
+			"category": "technical",
+			"corpus": ["recent-changes.md"],
+			"expectedResults": [
+				{
+					"file": "recent-changes.md",
+					"snippetContains": "Socket.io",
+					"relevance": 1.0
+				}
+			]
+		},
+		{
+			"id": "technical-mobile-stack",
+			"description": "Technical stack: Mobile app technology",
+			"query": "What technology stack powers the mobile apps?",
+			"category": "technical",
+			"corpus": ["recent-changes.md"],
+			"expectedResults": [
+				{
+					"file": "recent-changes.md",
+					"snippetContains": "React Native",
+					"relevance": 1.0
+				}
+			]
+		},
+		{
+			"id": "metrics-performance",
+			"description": "Metrics: Performance improvements",
+			"query": "How much did we improve API latency?",
+			"category": "metrics",
+			"corpus": ["recent-changes.md"],
+			"expectedResults": [
+				{
+					"file": "recent-changes.md",
+					"snippetContains": "200ms → 80ms",
+					"relevance": 1.0
+				}
+			]
+		},
+		{
+			"id": "comparative-frontend",
+			"description": "Comparative: Framework choice",
+			"query": "Why React instead of Vue or Angular?",
+			"category": "comparative",
+			"corpus": ["decisions.md"],
+			"expectedResults": [
+				{
+					"file": "decisions.md",
+					"snippetContains": "React",
+					"relevance": 0.8
+				}
+			]
+		},
+		{
+			"id": "config-redis-details",
+			"description": "Configuration: Redis settings",
+			"query": "What are the Redis configuration parameters?",
+			"category": "config",
+			"corpus": ["decisions.md"],
+			"expectedResults": [
+				{
+					"file": "decisions.md",
+					"snippetContains": "Redis version",
+					"relevance": 1.0
+				}
+			]
+		},
+		{
+			"id": "architecture-microservices",
+			"description": "Architecture: Microservices migration",
+			"query": "Are we moving to microservices?",
+			"category": "architecture",
+			"corpus": ["recent-changes.md"],
+			"expectedResults": [
+				{
+					"file": "recent-changes.md",
+					"snippetContains": "Microservices Migration",
+					"relevance": 1.0
+				}
+			]
+		}
+	]
+}
